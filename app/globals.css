@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), sans-serif;
+  --font-display: var(--font-outfit), sans-serif;
+  
+  --color-brand-bg: #FAF6EB;
+  --color-brand-dark: #121212;
+  --color-brand-muted: #6B6B6B;
+  --color-brand-card: #FFFFFF;
+  --color-brand-accent: #EFEFE9;
+}
+
+:root {
+  --background: #FAF6EB;
+  --foreground: #121212;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom transitions and interactive styles */
+.masonry-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Custom animation for modal backdrop blur */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Enforce uniform aspect ratio on mobile, dynamic Pinterest masonry on desktop */
+.dynamic-aspect-ratio {
+  aspect-ratio: 4 / 3; /* Uniform layout on mobile */
+}
+
+@media (min-width: 640px) {
+  .dynamic-aspect-ratio {
+    aspect-ratio: var(--aspect-ratio);
+  }
+}
+
