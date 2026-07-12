@@ -17,12 +17,18 @@ interface ArtistPortfolioProps {
 
 export default function ArtistPortfolio({ initialArtworks }: ArtistPortfolioProps) {
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
-  const [preloaderComplete, setPreloaderComplete] = useState(preloaderPlayed);
+  const [preloaderComplete, setPreloaderComplete] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
-  const isFirstRender = useRef(!preloaderPlayed);
+  const isFirstRender = useRef(true);
 
   // Initialize interactive UI sounds
   useEffect(() => {
+    const played = typeof window !== "undefined" && (window as any).__preloaderPlayed === true;
+    isFirstRender.current = !played;
+    if (played) {
+      setPreloaderComplete(true);
+    }
+    
     bind();
 
     // Mobile Web Audio API requires a user-gesture to unlock the AudioContext.

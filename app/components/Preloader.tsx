@@ -15,6 +15,10 @@ interface PreloaderProps {
 // when navigating back and forth from the /about page, but resets on a manual browser refresh.
 export let preloaderPlayed = false;
 
+if (typeof window !== "undefined") {
+  preloaderPlayed = (window as any).__preloaderPlayed === true;
+}
+
 export default function Preloader({ onComplete }: PreloaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLDivElement>(null);
@@ -106,6 +110,9 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         onStart: () => {
           onComplete(); // Start revealing content under the rolling shutter
           preloaderPlayed = true; // Mark preloader as played
+          if (typeof window !== "undefined") {
+            (window as any).__preloaderPlayed = true;
+          }
         }
       },
       "-=0.25" // Overlap slightly with name fade out
