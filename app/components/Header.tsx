@@ -27,10 +27,9 @@ export default function Header({ onNavigate }: HeaderProps) {
   return (
     <header className="w-full px-6 py-6 md:px-12 lg:px-16 bg-transparent">
       <div className="mx-auto flex w-full items-center justify-between">
-
         {/* Left Side: Doodle & Name */}
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="flex items-center gap-3 cursor-pointer group"
           onClick={(e) => handleLinkClick(e, "/")}
         >

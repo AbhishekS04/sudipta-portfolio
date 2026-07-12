@@ -28,8 +28,8 @@ export default function MasonryGrid({ items, onArtworkClick }: MasonryGridProps)
 
   // Set column counts based on screen width
   useEffect(() => {
-    setIsMounted(true);
-    
+    setTimeout(() => setIsMounted(true), 0);
+
     const handleResize = () => {
       const width = window.innerWidth;
       if (width < 640) {
@@ -69,7 +69,7 @@ export default function MasonryGrid({ items, onArtworkClick }: MasonryGridProps)
 
       // Add item to the shortest column
       columns[minColumnIndex].push(item);
-      
+
       // Calculate aspect ratio height factor (height / width)
       // A taller image has a higher height factor, contributing more to the column height.
       const heightFactor = item.height / item.width;
@@ -84,7 +84,12 @@ export default function MasonryGrid({ items, onArtworkClick }: MasonryGridProps)
     return (
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
-          <div key={item.id} onClick={() => onArtworkClick(item)} className="cursor-pointer" data-cuelume-press="tick">
+          <div
+            key={item.id}
+            onClick={() => onArtworkClick(item)}
+            className="cursor-pointer"
+            data-cuelume-press="tick"
+          >
             <WorkCard item={item} />
           </div>
         ))}
@@ -100,7 +105,12 @@ export default function MasonryGrid({ items, onArtworkClick }: MasonryGridProps)
       {columns.map((column, colIdx) => (
         <div key={colIdx} className="flex flex-1 flex-col gap-8">
           {column.map((item) => (
-            <div key={item.id} onClick={() => onArtworkClick(item)} className="cursor-pointer" data-cuelume-press="tick">
+            <div
+              key={item.id}
+              onClick={() => onArtworkClick(item)}
+              className="cursor-pointer"
+              data-cuelume-press="tick"
+            >
               <WorkCard item={item} />
             </div>
           ))}

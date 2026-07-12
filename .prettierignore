@@ -1,0 +1,9 @@
+.next/
+node_modules/
+dist/
+build/
+package-lock.json
+public/
+sanity/
+.env*
+*.md

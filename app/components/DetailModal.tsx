@@ -29,41 +29,44 @@ export default function DetailModal({ artwork, onClose }: DetailModalProps) {
   }, []);
 
   // GSAP animation for opening modal layers (luxurious, slower, and ultra-smooth ease)
-  useGSAP(() => {
-    const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
 
-    // 1. Fade in the backdrop overlay slowly
-    tl.fromTo(
-      backdropRef.current,
-      { opacity: 0 },
-      { opacity: 0.35, duration: 1.0, ease: "power2.out" },
-      0
-    );
+      // 1. Fade in the backdrop overlay slowly
+      tl.fromTo(
+        backdropRef.current,
+        { opacity: 0 },
+        { opacity: 0.35, duration: 1.0, ease: "power2.out" },
+        0,
+      );
 
-    // 2. Slide in the panel from the right with a smooth, long deceleration curve
-    tl.fromTo(
-      panelRef.current,
-      { x: "100%" },
-      { x: "0%", duration: 1.25, ease: "power4.out" },
-      0
-    );
+      // 2. Slide in the panel from the right with a smooth, long deceleration curve
+      tl.fromTo(
+        panelRef.current,
+        { x: "100%" },
+        { x: "0%", duration: 1.25, ease: "power4.out" },
+        0,
+      );
 
-    // 3. Scale up and fade in the image with subtle parameters
-    tl.fromTo(
-      imageRef.current,
-      { opacity: 0, scale: 0.98 },
-      { opacity: 1, scale: 1, duration: 0.95, ease: "power3.out" },
-      "-=0.9" // heavy overlap for organic blending
-    );
+      // 3. Scale up and fade in the image with subtle parameters
+      tl.fromTo(
+        imageRef.current,
+        { opacity: 0, scale: 0.98 },
+        { opacity: 1, scale: 1, duration: 0.95, ease: "power3.out" },
+        "-=0.9", // heavy overlap for organic blending
+      );
 
-    // 4. Slide up and fade in the text details
-    tl.fromTo(
-      textRef.current,
-      { opacity: 0, y: 15 },
-      { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" },
-      "-=0.8"
-    );
-  }, { scope: containerRef });
+      // 4. Slide up and fade in the text details
+      tl.fromTo(
+        textRef.current,
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" },
+        "-=0.8",
+      );
+    },
+    { scope: containerRef },
+  );
 
   // Handle fully synchronized slide-out on close (drawer sliding away physically)
   const handleClose = () => {
@@ -73,17 +76,25 @@ export default function DetailModal({ artwork, onClose }: DetailModalProps) {
     });
 
     // 1. Slide out the main panel to the right (slower, highly cushioned ease)
-    tl.to(panelRef.current, {
-      x: "100%",
-      duration: 1.15,
-    }, 0);
+    tl.to(
+      panelRef.current,
+      {
+        x: "100%",
+        duration: 1.15,
+      },
+      0,
+    );
 
     // 2. Fade out the backdrop overlay in parallel
-    tl.to(backdropRef.current, {
-      opacity: 0,
-      duration: 0.95,
-      ease: "power3.out",
-    }, 0.05);
+    tl.to(
+      backdropRef.current,
+      {
+        opacity: 0,
+        duration: 0.95,
+        ease: "power3.out",
+      },
+      0.05,
+    );
   };
 
   // Close on Escape key press
@@ -98,7 +109,10 @@ export default function DetailModal({ artwork, onClose }: DetailModalProps) {
   }, []);
 
   return (
-    <div ref={containerRef} className="fixed inset-0 z-50 flex items-center justify-end overflow-hidden">
+    <div
+      ref={containerRef}
+      className="fixed inset-0 z-50 flex items-center justify-end overflow-hidden"
+    >
       {/* Backdrop overlay (dark shade overlay managed by GSAP) */}
       <div
         ref={backdropRef}
@@ -135,7 +149,10 @@ export default function DetailModal({ artwork, onClose }: DetailModalProps) {
 
         {/* Left Column: Image Viewer */}
         <div className="flex flex-1 items-center justify-center bg-brand-card p-6 md:p-12 overflow-hidden h-1/2 md:h-full border-b md:border-b-0 md:border-r border-black/[0.03]">
-          <div ref={imageRef} className="relative h-full w-full flex items-center justify-center opacity-0 overflow-hidden">
+          <div
+            ref={imageRef}
+            className="relative h-full w-full flex items-center justify-center opacity-0 overflow-hidden"
+          >
             {artwork.images && artwork.images.length > 1 ? (
               /* Figma Multi-Image Layout */
               <div className="flex flex-row gap-6 w-full h-[35vh] md:h-[70vh] items-stretch justify-center">
@@ -195,7 +212,7 @@ export default function DetailModal({ artwork, onClose }: DetailModalProps) {
                 {artwork.client}
               </span>
             )}
-            
+
             {/* Title */}
             <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-dark md:text-4xl">
               {artwork.title}

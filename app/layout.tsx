@@ -26,7 +26,8 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   title: "Sudipta Sarkar — Artist Portfolio",
-  description: "Sudipta Sarkar is an artist who loves to draw and sketch. She loves coffee, colors, and beautiful lineart.",
+  description:
+    "Sudipta Sarkar is an artist who loves to draw and sketch. She loves coffee, colors, and beautiful lineart.",
 };
 
 export default function RootLayout({
@@ -41,9 +42,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-sans bg-brand-bg text-brand-dark selection:bg-brand-accent selection:text-brand-dark">
         <SmoothScroll />
-        <PageTransitionProvider>
-          {children}
-        </PageTransitionProvider>
+        <PageTransitionProvider>{children}</PageTransitionProvider>
       </body>
     </html>
   );

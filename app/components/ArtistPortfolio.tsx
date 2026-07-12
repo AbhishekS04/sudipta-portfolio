@@ -23,12 +23,14 @@ export default function ArtistPortfolio({ initialArtworks }: ArtistPortfolioProp
 
   // Initialize interactive UI sounds
   useEffect(() => {
-    const played = typeof window !== "undefined" && (window as any).__preloaderPlayed === true;
+    const played =
+      typeof window !== "undefined" &&
+      (window as unknown as { __preloaderPlayed?: boolean }).__preloaderPlayed === true;
     isFirstRender.current = !played;
     if (played) {
-      setPreloaderComplete(true);
+      setTimeout(() => setPreloaderComplete(true), 0);
     }
-    
+
     bind();
 
     // Mobile Web Audio API requires a user-gesture to unlock the AudioContext.
@@ -73,7 +75,7 @@ export default function ArtistPortfolio({ initialArtworks }: ArtistPortfolioProp
         duration: 1.1,
         ease: "power4.out",
         stagger: 0.12,
-      }
+      },
     );
   }, [preloaderComplete]);
 

@@ -12,7 +12,7 @@ export default function AboutClient() {
   const [isMounted, setIsMounted] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [timeStr, setTimeStr] = useState("");
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,18 +27,18 @@ export default function AboutClient() {
   // Initialize interactive sounds and Indian Standard Time (IST) clock
   useEffect(() => {
     bind();
-    setIsMounted(true);
+    setTimeout(() => setIsMounted(true), 0);
 
     const updateTime = () => {
       const now = new Date();
       // India is UTC +5.5 hours
       const utc = now.getTime() + now.getTimezoneOffset() * 60000;
       const ist = new Date(utc + 3600000 * 5.5);
-      
+
       const hours = String(ist.getHours()).padStart(2, "0");
       const minutes = String(ist.getMinutes()).padStart(2, "0");
       const seconds = String(ist.getSeconds()).padStart(2, "0");
-      
+
       setTimeStr(`${hours}:${minutes}:${seconds} (IST)`);
     };
 
@@ -53,14 +53,14 @@ export default function AboutClient() {
 
     if (isContactOpen) {
       document.body.style.overflow = "hidden";
-      
+
       // Fade in backdrop
       gsap.to(backdropRef.current, {
         opacity: 1,
         duration: 0.4,
         ease: "power2.out",
       });
-      
+
       // Slide in contact form
       gsap.to(overlayRef.current, {
         x: 0,
@@ -69,14 +69,14 @@ export default function AboutClient() {
       });
     } else {
       document.body.style.overflow = "";
-      
+
       // Slide out contact form
       gsap.to(overlayRef.current, {
         x: "100%",
         duration: 0.4,
         ease: "power3.in",
       });
-      
+
       // Fade out backdrop
       gsap.to(backdropRef.current, {
         opacity: 0,
@@ -93,7 +93,7 @@ export default function AboutClient() {
     gsap.fromTo(
       contentRef.current,
       { opacity: 0, y: 15 },
-      { opacity: 1, y: 0, duration: 0.85, ease: "power3.out" }
+      { opacity: 1, y: 0, duration: 0.85, ease: "power3.out" },
     );
   }, [isMounted]);
 
@@ -119,20 +119,24 @@ export default function AboutClient() {
       <Header />
 
       {/* Main Container */}
-      <main ref={contentRef} className="flex-1 w-full max-w-7xl mx-auto flex flex-col justify-between py-8 md:py-16 opacity-0">
-        
+      <main
+        ref={contentRef}
+        className="flex-1 w-full max-w-7xl mx-auto flex flex-col justify-between py-8 md:py-16 opacity-0"
+      >
         {/* Large Editorial Serif Headline (Typography Only) */}
         <div className="w-full px-6 md:px-12 lg:px-16 mb-16 md:mb-24">
           <h1 className="font-serif text-[7.5vw] sm:text-[6.5vw] md:text-[5vw] lg:text-[4.2vw] font-normal leading-[1.08] tracking-tight text-brand-dark">
-            Sudipta Sarkar is an <span className="italic font-normal">artist</span> exploring the interplay between <span className="italic font-normal">botanical beauty</span>, <span className="italic font-normal">warm colors</span> and <span className="italic font-normal">lineart</span>.
+            Sudipta Sarkar is an <span className="italic font-normal">artist</span> exploring the
+            interplay between <span className="italic font-normal">botanical beauty</span>,{" "}
+            <span className="italic font-normal">warm colors</span> and{" "}
+            <span className="italic font-normal">lineart</span>.
           </h1>
         </div>
 
         {/* 4-Column Responsive Grid Layout */}
         <div className="w-full px-6 md:px-12 lg:px-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-14 border-t border-black/[0.08] pt-12">
-          
           {/* Column 1: Typographic Blue Contact Card */}
-          <div 
+          <div
             onClick={() => setIsContactOpen(true)}
             className="group relative flex flex-col justify-between bg-[#0B74C9] p-7 md:p-8 rounded-[2.2rem] h-[360px] cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 shadow-sm overflow-hidden select-none"
             data-cuelume-press="tick"
@@ -148,8 +152,10 @@ export default function AboutClient() {
 
             <div className="mt-auto flex flex-col gap-4">
               <p className="font-sans text-xs text-brand-bg uppercase tracking-wider font-bold flex items-center gap-1.5">
-                Get in touch 
-                <span className="inline-block transform group-hover:translate-x-1.5 transition-transform duration-300">→</span>
+                Get in touch
+                <span className="inline-block transform group-hover:translate-x-1.5 transition-transform duration-300">
+                  →
+                </span>
               </p>
               <div className="text-[9px] uppercase font-bold text-brand-bg/50 tracking-widest border-t border-brand-bg/10 pt-3">
                 Available for freelance & commissions
@@ -173,13 +179,33 @@ export default function AboutClient() {
               Say Hi!
             </span>
             <div className="flex flex-col gap-2 font-sans text-[15px] font-bold text-brand-dark">
-              <a href="mailto:sudiptasarkar@email.com" className="hover:text-brand-muted transition-colors" data-cuelume-press="tick">
+              <a
+                href="mailto:sudiptasarkar@email.com"
+                className="hover:text-brand-muted transition-colors"
+                data-cuelume-press="tick"
+              >
                 sudiptasarkar@email.com
               </a>
               <span className="text-brand-muted/80">+91 (0) 987 65 43 210</span>
               <div className="flex gap-4 mt-2">
-                <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-brand-muted transition-colors" data-cuelume-press="tick">Instagram</a>
-                <a href="https://behance.net" target="_blank" rel="noreferrer" className="hover:text-brand-muted transition-colors" data-cuelume-press="tick">Behance</a>
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-brand-muted transition-colors"
+                  data-cuelume-press="tick"
+                >
+                  Instagram
+                </a>
+                <a
+                  href="https://behance.net"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-brand-muted transition-colors"
+                  data-cuelume-press="tick"
+                >
+                  Behance
+                </a>
               </div>
             </div>
           </div>
@@ -191,26 +217,30 @@ export default function AboutClient() {
             </span>
             <div className="font-sans text-[15px] font-bold text-brand-dark">
               <p>Based in Kolkata, India</p>
-              <p className="text-xs font-semibold text-brand-muted mt-1 select-none">{timeStr ? timeStr : "00:00:00 (IST)"} • Sunny 28°</p>
+              <p className="text-xs font-semibold text-brand-muted mt-1 select-none">
+                {timeStr ? timeStr : "00:00:00 (IST)"} • Sunny 28°
+              </p>
             </div>
-            
+
             {/* Typographic representation of time zone */}
             <div className="mt-12 font-serif text-[2.8rem] leading-none italic text-brand-dark/25 select-none tracking-tight">
               GMT+5:30
             </div>
           </div>
-
         </div>
 
         {/* Dynamic Footer Credits */}
         <div className="mt-20 border-t border-black/[0.05] pt-6 pb-2 flex flex-col sm:flex-row justify-between items-center text-[10px] font-bold uppercase tracking-wider text-brand-muted/70 px-6 md:px-12 lg:px-16">
           <div className="select-none">Site Credits</div>
           <div className="flex gap-6 mt-3 sm:mt-0">
-            <a href="#" className="hover:text-brand-dark transition-colors">Imprint</a>
-            <a href="#" className="hover:text-brand-dark transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-brand-dark transition-colors">
+              Imprint
+            </a>
+            <a href="#" className="hover:text-brand-dark transition-colors">
+              Privacy Policy
+            </a>
           </div>
         </div>
-
       </main>
 
       {/* Slide-out Backdrop */}
@@ -218,7 +248,10 @@ export default function AboutClient() {
         ref={backdropRef}
         onClick={closeContactForm}
         className="fixed inset-0 bg-black/35 backdrop-blur-xs z-[99998] pointer-events-none opacity-0"
-        style={{ display: isContactOpen ? "block" : "none", pointerEvents: isContactOpen ? "auto" : "none" }}
+        style={{
+          display: isContactOpen ? "block" : "none",
+          pointerEvents: isContactOpen ? "auto" : "none",
+        }}
       />
 
       {/* Slide-out Contact Panel */}
@@ -243,7 +276,7 @@ export default function AboutClient() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        
+
         {/* Panel Form Content */}
         <div className="flex-1 flex flex-col justify-center max-w-sm mx-auto w-full py-12">
           <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-brand-muted select-none">
@@ -253,7 +286,8 @@ export default function AboutClient() {
             Start a Project
           </h2>
           <p className="mt-2 text-xs text-brand-muted leading-relaxed select-none">
-            Have an idea, commission, or freelance project? Drop a message below and I&apos;ll get back to you.
+            Have an idea, commission, or freelance project? Drop a message below and I&apos;ll get
+            back to you.
           </p>
 
           <div className="mt-8 w-full">
@@ -323,9 +357,13 @@ export default function AboutClient() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                 </div>
-                <h3 className="font-display font-bold text-brand-dark text-lg">Thank you, {formData.name}!</h3>
+                <h3 className="font-display font-bold text-brand-dark text-lg">
+                  Thank you, {formData.name}!
+                </h3>
                 <p className="mt-2 text-xs text-brand-muted max-w-xs leading-relaxed">
-                  Your message has been sent successfully. Sudipta will get back to you at <span className="font-medium text-brand-dark">{formData.email}</span> within 24 hours.
+                  Your message has been sent successfully. Sudipta will get back to you at{" "}
+                  <span className="font-medium text-brand-dark">{formData.email}</span> within 24
+                  hours.
                 </p>
                 <button
                   onClick={() => {
@@ -340,7 +378,6 @@ export default function AboutClient() {
             )}
           </div>
         </div>
-
       </div>
     </div>
   );

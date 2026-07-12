@@ -16,7 +16,8 @@ interface PreloaderProps {
 export let preloaderPlayed = false;
 
 if (typeof window !== "undefined") {
-  preloaderPlayed = (window as any).__preloaderPlayed === true;
+  preloaderPlayed =
+    (window as unknown as { __preloaderPlayed?: boolean }).__preloaderPlayed === true;
 }
 
 export default function Preloader({ onComplete }: PreloaderProps) {
@@ -27,18 +28,20 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   // while the component is active to prevent unmounting during running GSAP timelines.
   const [shouldSkip] = useState(preloaderPlayed);
   const [isMounted, setIsMounted] = useState(false);
-  const [grid, setGrid] = useState({ cols: 10, rows: 8 });
+  const [grid] = useState(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      return { cols: 5, rows: 6 };
+    }
+    return { cols: 10, rows: 8 };
+  });
 
   useEffect(() => {
     if (shouldSkip) {
       onComplete();
-      setIsMounted(true);
+      setTimeout(() => setIsMounted(true), 0);
       return;
     }
-    if (window.innerWidth < 768) {
-      setGrid({ cols: 5, rows: 6 });
-    }
-    setIsMounted(true);
+    setTimeout(() => setIsMounted(true), 0);
   }, [shouldSkip, onComplete]);
 
   const { cols, rows } = grid;
@@ -61,74 +64,77 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     return list;
   }, [rows, cols, shouldSkip]);
 
-  useGSAP(() => {
-    if (!isMounted || shouldSkip) return;
+  useGSAP(
+    () => {
+      if (!isMounted || shouldSkip) return;
 
-    // Disable scroll on body while preloading
-    document.body.style.overflow = "hidden";
+      // Disable scroll on body while preloading
+      document.body.style.overflow = "hidden";
 
-    const boxElements = gsap.utils.toArray(".preloader-box");
-    const tl = gsap.timeline({
-      onComplete: () => {
-        document.body.style.overflow = "";
-      },
-    });
-
-    // 1. Brand name fades in and slides up smoothly
-    tl.fromTo(
-      nameRef.current,
-      { opacity: 0, y: 25, scale: 0.98 },
-      { opacity: 1, y: 0, scale: 1, duration: 1.0, ease: "power4.out" }
-    );
-
-    // 2. Pause to allow reading
-    tl.to({}, { duration: 0.7 });
-
-    // 3. Name fades out and slides up
-    tl.to(nameRef.current, {
-      opacity: 0,
-      y: -20,
-      duration: 0.55,
-      ease: "power3.in",
-    });
-
-    // 4. Staggered Shutter Box Reveal
-    // Animates the boxes to slide all the way up and off-screen
-    // Stagger starts from bottom-left [0, 1] (column 0, row 1)
-    tl.to(
-      boxElements,
-      {
-        y: -(window.innerHeight + 100),
-        force3D: true,
-        duration: 1.25,
-        ease: "power4.inOut",
-        stagger: {
-          grid: [rows, cols],
-          from: (rows - 1) * cols, // Bottom-left corner index ((rows-1)*cols)
-          amount: window.innerWidth < 768 ? 1.0 : 1.5,
+      const boxElements = gsap.utils.toArray(".preloader-box");
+      const tl = gsap.timeline({
+        onComplete: () => {
+          document.body.style.overflow = "";
         },
-        onStart: () => {
-          onComplete(); // Start revealing content under the rolling shutter
-          preloaderPlayed = true; // Mark preloader as played
-          if (typeof window !== "undefined") {
-            (window as any).__preloaderPlayed = true;
-          }
-        }
-      },
-      "-=0.25" // Overlap slightly with name fade out
-    );
+      });
 
-    // 5. Hide the preloader container
-    tl.to(containerRef.current, {
-      display: "none",
-      duration: 0,
-    });
+      // 1. Brand name fades in and slides up smoothly
+      tl.fromTo(
+        nameRef.current,
+        { opacity: 0, y: 25, scale: 0.98 },
+        { opacity: 1, y: 0, scale: 1, duration: 1.0, ease: "power4.out" },
+      );
 
-    // Cleanup: restore body overflow on unmount
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, { dependencies: [isMounted, cols, rows], scope: containerRef });
+      // 2. Pause to allow reading
+      tl.to({}, { duration: 0.7 });
+
+      // 3. Name fades out and slides up
+      tl.to(nameRef.current, {
+        opacity: 0,
+        y: -20,
+        duration: 0.55,
+        ease: "power3.in",
+      });
+
+      // 4. Staggered Shutter Box Reveal
+      // Animates the boxes to slide all the way up and off-screen
+      // Stagger starts from bottom-left [0, 1] (column 0, row 1)
+      tl.to(
+        boxElements,
+        {
+          y: -(window.innerHeight + 100),
+          force3D: true,
+          duration: 1.25,
+          ease: "power4.inOut",
+          stagger: {
+            grid: [rows, cols],
+            from: (rows - 1) * cols, // Bottom-left corner index ((rows-1)*cols)
+            amount: window.innerWidth < 768 ? 1.0 : 1.5,
+          },
+          onStart: () => {
+            onComplete(); // Start revealing content under the rolling shutter
+            preloaderPlayed = true; // Mark preloader as played
+            if (typeof window !== "undefined") {
+              (window as unknown as { __preloaderPlayed?: boolean }).__preloaderPlayed = true;
+            }
+          },
+        },
+        "-=0.25", // Overlap slightly with name fade out
+      );
+
+      // 5. Hide the preloader container
+      tl.to(containerRef.current, {
+        display: "none",
+        duration: 0,
+      });
+
+      // Cleanup: restore body overflow on unmount
+      return () => {
+        document.body.style.overflow = "";
+      };
+    },
+    { dependencies: [isMounted, cols, rows], scope: containerRef },
+  );
 
   if (shouldSkip) return null;
 

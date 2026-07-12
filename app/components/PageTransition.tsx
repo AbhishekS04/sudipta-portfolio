@@ -35,16 +35,16 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
   // SVG Path Morph Coordinates
   // Initial: Flat line at the bottom of the screen (y=100)
   const initialPath = "M 0 100 L 100 100 L 100 100 Q 50 100 0 100 Z";
-  
+
   // Mid-Close: Center of the wave rising faster than sides, bulging upwards (y=50 on sides, y=15 in center)
   const midClosePath = "M 0 100 L 100 100 L 100 50 Q 50 15 0 50 Z";
-  
+
   // Full-Close: Fully covering the screen (y=0)
   const fullClosePath = "M 0 100 L 100 100 L 100 0 Q 50 0 0 0 Z";
-  
+
   // Mid-Open: Center of the bottom edge rising faster than sides (y=50 on sides, y=15 in center)
   const midOpenPath = "M 0 0 L 100 0 L 100 50 Q 50 15 0 50 Z";
-  
+
   // Full-Open: Completely off-screen at the top (y=0)
   const fullOpenPath = "M 0 0 L 100 0 L 100 0 Q 50 0 0 0 Z";
 
@@ -65,7 +65,7 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
 
     // Show overlay container
     gsap.set(containerRef.current, { display: "block" });
-    
+
     // Reset path to starting flat bottom line
     gsap.set(pathRef.current, { attr: { d: initialPath } });
 
@@ -91,9 +91,9 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
   useEffect(() => {
     if (pathname !== prevPathname.current) {
       prevPathname.current = pathname;
-      
+
       if (isTransitioning) {
-        // Settle delay (120ms) allows the new page component (e.g. Masonry grid) 
+        // Settle delay (120ms) allows the new page component (e.g. Masonry grid)
         // to finish mounting and layout calculations on the main thread before starting the animation.
         const timer = setTimeout(() => {
           const tl = gsap.timeline({
@@ -127,15 +127,15 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
   return (
     <PageTransitionContext.Provider value={{ startTransition, isTransitioning }}>
       {children}
-      
+
       {/* Liquid Wave Transition Overlay (with GPU Acceleration hints) */}
       <div
         ref={containerRef}
         className="fixed inset-0 z-[9999] pointer-events-none select-none"
-        style={{ 
+        style={{
           display: "none",
           transform: "translate3d(0, 0, 0)",
-          willChange: "transform"
+          willChange: "transform",
         }}
       >
         <svg
@@ -146,7 +146,7 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
           }`}
           style={{
             transform: "translate3d(0, 0, 0)",
-            willChange: "transform"
+            willChange: "transform",
           }}
         >
           <path
@@ -154,7 +154,7 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
             fill="#E5E0D5"
             d={initialPath}
             style={{
-              willChange: "transform, d"
+              willChange: "transform, d",
             }}
           />
         </svg>

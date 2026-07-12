@@ -10,7 +10,7 @@ interface WorkCardProps {
 
 export default function WorkCard({ item }: WorkCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  
+
   // Fall back to 4:3 if metadata dimensions are missing
   const w = item.width ?? 1200;
   const h = item.height ?? 900;
@@ -94,5 +94,3 @@ export default function WorkCard({ item }: WorkCardProps) {
     </article>
   );
 }
-
-

@@ -1,0 +1,21 @@
+#!/bin/sh
+# Get the commit message file path
+commit_msg_file="$1"
+commit_msg=$(cat "$commit_msg_file")
+
+# Trim whitespace
+trimmed_msg=$(echo "$commit_msg" | xargs)
+
+# Check if the commit message is empty
+if [ -z "$trimmed_msg" ]; then
+  echo "❌ Error: Commit message cannot be empty!"
+  exit 1
+fi
+
+# Check if the commit message is too short (e.g. less than 4 characters)
+char_count=$(echo -n "$trimmed_msg" | wc -c)
+if [ "$char_count" -lt 4 ]; then
+  echo "❌ Error: Commit message is too short (minimum 4 characters)!"
+  echo "Your message was: '$trimmed_msg'"
+  exit 1
+fi
