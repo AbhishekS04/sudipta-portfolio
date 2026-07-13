@@ -10,10 +10,11 @@ export default function SmoothScroll() {
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      syncTouch: true, // enable smooth scroll on mobile/touch screens
-      syncTouchLerp: 0.08, // slightly lower lerp for smoother touch damping
-      touchMultiplier: 1.2, // control touch sensitivity to prevent quick twitch jitters
     });
+
+    if (typeof window !== "undefined") {
+      (window as unknown as { lenis: unknown }).lenis = lenis;
+    }
 
     // Use GSAP ticker to run Lenis's raf loop for unified rendering
     function update(time: number) {
@@ -25,6 +26,9 @@ export default function SmoothScroll() {
     return () => {
       gsap.ticker.remove(update);
       lenis.destroy();
+      if (typeof window !== "undefined") {
+        delete (window as unknown as { lenis?: unknown }).lenis;
+      }
     };
   }, []);
 

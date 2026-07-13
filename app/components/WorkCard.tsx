@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { Artwork } from "./MasonryGrid";
 
@@ -9,18 +9,12 @@ interface WorkCardProps {
 }
 
 export default function WorkCard({ item }: WorkCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
   // Fall back to 4:3 if metadata dimensions are missing
   const w = item.width ?? 1200;
   const h = item.height ?? 900;
 
   return (
-    <article
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="group flex flex-col w-full overflow-hidden"
-    >
+    <article className="group flex flex-col w-full overflow-hidden">
       {/* Media container — enforced aspect ratio prevents layout shifts */}
       <div
         className="relative w-full overflow-hidden rounded-2xl bg-brand-accent dynamic-aspect-ratio"

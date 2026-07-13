@@ -53,7 +53,7 @@ export default function AboutClient() {
   }, [isMounted]);
 
   return (
-    <div className="flex min-h-screen md:h-screen flex-col bg-brand-bg font-sans selection:bg-brand-accent selection:text-brand-dark md:overflow-hidden relative">
+    <div className="flex min-h-screen md:h-screen flex-col bg-brand-bg font-sans selection:bg-brand-accent selection:text-brand-dark md:overflow-hidden relative overflow-x-hidden">
       {/* Subtle Noise/Grain Overlay */}
       <div
         className="fixed inset-0 pointer-events-none opacity-[0.018] z-[9999]"
@@ -138,9 +138,10 @@ export default function AboutClient() {
           </div>
         </div>
 
-        {/* GIF fixed to the viewport bottom, independent of document flow */}
-        <div className="animate-fade-up opacity-0 fixed bottom-[-10] right-[-32%] md:right-[5%] z-10 pointer-events-none flex items-end gap-2 select-none">
+        {/* GIF absolutely positioned inside main flow to scroll with the document */}
+        <div className="animate-fade-up opacity-0 absolute bottom-[0px] right-[-140px] md:right-[-20%] z-10 pointer-events-none flex items-end gap-2 select-none">
           <div className="w-[380px] md:w-[400px] h-[320px] md:h-[320px] overflow-hidden flex items-start justify-center translate-y-[35%]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/gif/person-pointing-at-something.gif"
               alt="Pointing to Instagram"

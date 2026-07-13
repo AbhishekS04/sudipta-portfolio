@@ -23,30 +23,40 @@ export function usePageTransition() {
   return context;
 }
 
+// 4 Gorgeous Editorial Brand Color Shades (Staggered Ripple)
+// Last color is #faf6eb which is the page background color (for seamless blend)
+const transitionColors = [
+  "#8fa882", // Layer 1: Sage Green
+  "#e4b363", // Layer 2: Ochre Gold
+  "#e2856e", // Layer 3: Terracotta/Coral
+  "#faf6eb", // Layer 4: Cream (Main page background)
+];
+
+// SVG Morph Coordinates for Bottom to Top ("up")
+const initialPathUp = "M 0 100 L 100 100 L 100 100 Q 50 100 0 100 Z";
+const midClosePathUp = "M 0 100 L 100 100 L 100 50 Q 50 30 0 50 Z";
+const fullClosePathUp = "M 0 100 L 100 100 L 100 0 Q 50 0 0 0 Z";
+const startRevealPathUp = "M 0 0 L 100 0 L 100 100 Q 50 100 0 100 Z";
+const midOpenPathUp = "M 0 0 L 100 0 L 100 50 Q 50 30 0 50 Z";
+const fullOpenPathUp = "M 0 0 L 100 0 L 100 0 Q 50 0 0 0 Z";
+
+// SVG Morph Coordinates for Top to Bottom ("down")
+const initialPathDown = "M 0 0 L 100 0 L 100 0 Q 50 0 0 0 Z";
+const midClosePathDown = "M 0 0 L 100 0 L 100 50 Q 50 70 0 50 Z";
+const fullClosePathDown = "M 0 0 L 100 0 L 100 100 Q 50 100 0 100 Z";
+const startRevealPathDown = "M 0 100 L 100 100 L 100 0 Q 50 0 0 0 Z";
+const midOpenPathDown = "M 0 100 L 100 100 L 100 50 Q 50 70 0 50 Z";
+const fullOpenPathDown = "M 0 100 L 100 100 L 100 100 Q 50 100 0 100 Z";
+
 export function PageTransitionProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const prevPathname = useRef(pathname);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const pathRef = useRef<SVGPathElement>(null);
+  const pathsRef = useRef<(SVGPathElement | null)[]>([]);
+  const [direction, setDirection] = useState<"up" | "down">("up");
   const [isTransitioning, setIsTransitioning] = useState(false);
-
-  // SVG Path Morph Coordinates
-  // Initial: Flat line at the bottom of the screen (y=100)
-  const initialPath = "M 0 100 L 100 100 L 100 100 Q 50 100 0 100 Z";
-
-  // Mid-Close: Center of the wave rising faster than sides, bulging upwards (y=50 on sides, y=15 in center)
-  const midClosePath = "M 0 100 L 100 100 L 100 50 Q 50 15 0 50 Z";
-
-  // Full-Close: Fully covering the screen (y=0)
-  const fullClosePath = "M 0 100 L 100 100 L 100 0 Q 50 0 0 0 Z";
-
-  // Mid-Open: Center of the bottom edge rising faster than sides (y=50 on sides, y=15 in center)
-  const midOpenPath = "M 0 0 L 100 0 L 100 50 Q 50 15 0 50 Z";
-
-  // Full-Open: Completely off-screen at the top (y=0)
-  const fullOpenPath = "M 0 0 L 100 0 L 100 0 Q 50 0 0 0 Z";
 
   // Trigger page transition
   const startTransition = (href: string) => {
@@ -54,9 +64,22 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
     if (isTransitioning) return;
 
     setIsTransitioning(true);
-    document.body.style.overflow = "hidden";
+    if (
+      typeof window !== "undefined" &&
+      (window as unknown as { lenis?: { stop: () => void } }).lenis
+    ) {
+      (window as unknown as { lenis: { stop: () => void } }).lenis.stop();
+    }
 
-    // Play visual feedback sound
+    // Set transition direction:
+    // Going to about or qr is bottom-to-top ("up"). Returning to home is top-to-bottom ("down")
+    const direction = href === "/about" || href === "/qr" ? "up" : "down";
+    setDirection(direction);
+
+    const initialPath = direction === "up" ? initialPathUp : initialPathDown;
+    const midClosePath = direction === "up" ? midClosePathUp : midClosePathDown;
+    const fullClosePath = direction === "up" ? fullClosePathUp : fullClosePathDown;
+
     try {
       play("tick");
     } catch (e) {
@@ -66,8 +89,12 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
     // Show overlay container
     gsap.set(containerRef.current, { display: "block" });
 
-    // Reset path to starting flat bottom line
-    gsap.set(pathRef.current, { attr: { d: initialPath } });
+    // Set initial path state for all layers
+    pathsRef.current.forEach((path) => {
+      if (path) {
+        gsap.set(path, { attr: { d: initialPath } });
+      }
+    });
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -75,15 +102,29 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
       },
     });
 
-    // Animate wave rising and morphing closed
-    tl.to(pathRef.current, {
-      attr: { d: midClosePath },
-      duration: 0.38,
-      ease: "power2.out",
-    }).to(pathRef.current, {
-      attr: { d: fullClosePath },
-      duration: 0.32,
-      ease: "power2.in",
+    // Animate wave rising/falling and morphing closed (Stagger from bottom layer to top layer)
+    pathsRef.current.forEach((path, idx) => {
+      if (!path) return;
+
+      const staggerDelay = idx * 0.12;
+
+      tl.to(
+        path,
+        {
+          attr: { d: midClosePath },
+          duration: 0.45,
+          ease: "power3.out",
+        },
+        staggerDelay,
+      ).to(
+        path,
+        {
+          attr: { d: fullClosePath },
+          duration: 0.4,
+          ease: "power3.inOut",
+        },
+        staggerDelay + 0.3,
+      );
     });
   };
 
@@ -93,42 +134,68 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
       prevPathname.current = pathname;
 
       if (isTransitioning) {
-        // Settle delay (120ms) allows the new page component (e.g. Masonry grid)
-        // to finish mounting and layout calculations on the main thread before starting the animation.
         const timer = setTimeout(() => {
+          const startRevealPath = direction === "up" ? startRevealPathUp : startRevealPathDown;
+          const midOpenPath = direction === "up" ? midOpenPathUp : midOpenPathDown;
+          const fullOpenPath = direction === "up" ? fullOpenPathUp : fullOpenPathDown;
+
           const tl = gsap.timeline({
             onComplete: () => {
               setIsTransitioning(false);
-              document.body.style.overflow = "";
+              if (
+                typeof window !== "undefined" &&
+                (window as unknown as { lenis?: { start: () => void } }).lenis
+              ) {
+                (window as unknown as { lenis: { start: () => void } }).lenis.start();
+              }
               gsap.set(containerRef.current, { display: "none" });
             },
           });
 
-          // Set starting state for reveal (fully covered)
-          gsap.set(pathRef.current, { attr: { d: "M 0 0 L 100 0 L 100 100 Q 50 100 0 100 Z" } });
+          // Set starting reveal state for all layers
+          pathsRef.current.forEach((path) => {
+            if (path) {
+              gsap.set(path, { attr: { d: startRevealPath } });
+            }
+          });
 
-          // Animate wave bottom edge rising up and morphing off-screen
-          tl.to(pathRef.current, {
-            attr: { d: midOpenPath },
-            duration: 0.42,
-            ease: "power2.out",
-          }).to(pathRef.current, {
-            attr: { d: fullOpenPath },
-            duration: 0.38,
-            ease: "power2.inOut",
+          // Animate reveal staggered (Reverse stagger: top layer reveals first to uncover layers below)
+          pathsRef.current.forEach((path, idx) => {
+            if (!path) return;
+
+            const staggerDelay = (3 - idx) * 0.12;
+
+            tl.to(
+              path,
+              {
+                attr: { d: midOpenPath },
+                duration: 0.5,
+                ease: "power3.out",
+              },
+              staggerDelay,
+            ).to(
+              path,
+              {
+                attr: { d: fullOpenPath },
+                duration: 0.45,
+                ease: "power3.inOut",
+              },
+              staggerDelay + 0.35,
+            );
           });
         }, 120);
 
         return () => clearTimeout(timer);
       }
     }
-  }, [pathname, isTransitioning]);
+  }, [pathname, isTransitioning, direction]);
 
   return (
     <PageTransitionContext.Provider value={{ startTransition, isTransitioning }}>
-      {children}
+      {/* Page Content wrapper */}
+      <div className="w-full min-h-screen flex flex-col">{children}</div>
 
-      {/* Liquid Wave Transition Overlay (with GPU Acceleration hints) */}
+      {/* Layered Liquid Wave Transition Overlay (with GPU Acceleration hints) */}
       <div
         ref={containerRef}
         className="fixed inset-0 z-[9999] pointer-events-none select-none"
@@ -140,6 +207,8 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
       >
         <svg
           viewBox="0 0 100 100"
+          width="100%"
+          height="100%"
           preserveAspectRatio="none"
           className={`absolute inset-0 w-full h-full ${
             isTransitioning ? "pointer-events-auto" : "pointer-events-none"
@@ -149,14 +218,19 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
             willChange: "transform",
           }}
         >
-          <path
-            ref={pathRef}
-            fill="#E5E0D5"
-            d={initialPath}
-            style={{
-              willChange: "transform, d",
-            }}
-          />
+          {transitionColors.map((color, idx) => (
+            <path
+              key={color}
+              ref={(el) => {
+                pathsRef.current[idx] = el;
+              }}
+              fill={color}
+              d={direction === "up" ? initialPathUp : initialPathDown}
+              style={{
+                willChange: "transform, d",
+              }}
+            />
+          ))}
         </svg>
       </div>
     </PageTransitionContext.Provider>

@@ -68,13 +68,22 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     () => {
       if (!isMounted || shouldSkip) return;
 
-      // Disable scroll on body while preloading
-      document.body.style.overflow = "hidden";
+      if (
+        typeof window !== "undefined" &&
+        (window as unknown as { lenis?: { stop: () => void } }).lenis
+      ) {
+        (window as unknown as { lenis: { stop: () => void } }).lenis.stop();
+      }
 
       const boxElements = gsap.utils.toArray(".preloader-box");
       const tl = gsap.timeline({
         onComplete: () => {
-          document.body.style.overflow = "";
+          if (
+            typeof window !== "undefined" &&
+            (window as unknown as { lenis?: { start: () => void } }).lenis
+          ) {
+            (window as unknown as { lenis: { start: () => void } }).lenis.start();
+          }
         },
       });
 
@@ -128,9 +137,14 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         duration: 0,
       });
 
-      // Cleanup: restore body overflow on unmount
+      // Cleanup: restore body overflow and start Lenis on unmount
       return () => {
-        document.body.style.overflow = "";
+        if (
+          typeof window !== "undefined" &&
+          (window as unknown as { lenis?: { start: () => void } }).lenis
+        ) {
+          (window as unknown as { lenis: { start: () => void } }).lenis.start();
+        }
       };
     },
     { dependencies: [isMounted, cols, rows], scope: containerRef },
@@ -141,7 +155,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden select-none bg-transparent"
+      className="fixed inset-0 w-screen h-screen z-[9999] flex flex-col items-center justify-center overflow-hidden select-none bg-transparent touch-none"
     >
       {/* Grid of Shutter Boxes (covering the entire screen) */}
       <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
@@ -165,7 +179,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         {/* Foreground Sharp Elegant Name */}
         <div
           ref={nameRef}
-          className="font-sans text-xl sm:text-2xl font-bold uppercase tracking-[0.3em] text-brand-dark pointer-events-none opacity-0"
+          className="font-sans text-xl sm:text-2xl font-bold uppercase tracking-[0.3em] leading-none text-brand-dark pointer-events-none opacity-0 mr-[-0.3em]"
         >
           Sudipta Sarkar
         </div>

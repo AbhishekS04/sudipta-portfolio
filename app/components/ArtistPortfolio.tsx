@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Header from "./Header";
 import MasonryGrid, { Artwork } from "./MasonryGrid";
 import DetailModal from "./DetailModal";
-import Preloader, { preloaderPlayed } from "./Preloader";
+import Preloader from "./Preloader";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { bind, play } from "cuelume";

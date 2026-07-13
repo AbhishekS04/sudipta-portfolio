@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Artwork } from "./MasonryGrid";
 import gsap from "gsap";
@@ -69,7 +69,7 @@ export default function DetailModal({ artwork, onClose }: DetailModalProps) {
   );
 
   // Handle fully synchronized slide-out on close (drawer sliding away physically)
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     const tl = gsap.timeline({
       defaults: { ease: "power4.inOut" },
       onComplete: onClose,
@@ -95,7 +95,7 @@ export default function DetailModal({ artwork, onClose }: DetailModalProps) {
       },
       0.05,
     );
-  };
+  }, [onClose]);
 
   // Close on Escape key press
   useEffect(() => {
@@ -106,7 +106,7 @@ export default function DetailModal({ artwork, onClose }: DetailModalProps) {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [handleClose]);
 
   return (
     <div
