@@ -2,16 +2,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Header from "../components/Header";
-import { bind, play } from "cuelume";
+import { bind } from "cuelume";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { Sacramento } from "next/font/google";
-
-const sacramento = Sacramento({
-  subsets: ["latin"],
-  weight: "400",
-  display: "swap",
-});
 
 gsap.registerPlugin(useGSAP);
 
@@ -146,7 +139,7 @@ export default function AboutClient() {
         </div>
 
         {/* GIF fixed to the viewport bottom, independent of document flow */}
-        <div className="fixed bottom-[-10] right-[-32%] md:right-[5%] z-10 pointer-events-none flex items-end gap-2 select-none">
+        <div className="animate-fade-up opacity-0 fixed bottom-[-10] right-[-32%] md:right-[5%] z-10 pointer-events-none flex items-end gap-2 select-none">
           <div className="w-[380px] md:w-[400px] h-[320px] md:h-[320px] overflow-hidden flex items-start justify-center translate-y-[35%]">
             <img
               src="/gif/person-pointing-at-something.gif"
